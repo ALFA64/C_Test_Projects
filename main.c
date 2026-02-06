@@ -1,7 +1,19 @@
+#ifdef __linux__
 #include <stdarg.h>
 
 typedef unsigned long size_t;
 typedef long ssize_t;
+
+#endif
+
+#ifdef _WIN32
+#include <windows.h>
+#include <stdarg.h>
+typedef long ssize_t;
+typedef unsigned long size_t;
+#endif
+
+#ifdef __linux__
 
 #define SYS_READ 0
 #define SYS_WRITE 1
@@ -28,6 +40,38 @@ ssize_t sys_write(int fd,const void *buf, size_t count){
 	);
 	return ret;
 }
+
+#endif
+
+#ifdef _WIN32
+
+static HANDLE get_handle(int fd){
+	if (fd == 0) return GetStdHandle(STD_INPUT_HANDLE);
+	if (fd == 1) return GetStdHandle(STD_OUTPUT_HANDLE);
+	if (fd == 2) return GetStdHandle(STD_ERROR_HANDLE);
+	return INVALID_HANDLE_VALUE;
+
+ssize_t sys_read(int fd, void *buf, size_t count){
+	HANDLE h = get_handle(fd);
+	DWORD read_bytes = 0;
+
+	if(!ReadFile(h, buf, (DWORD)count, &read_bytes, NULL))
+		return -1;
+
+	return (ssize_t)read_bytes;
+}
+
+ssize_t sys_write(int fd, const void *buf, size_t count){
+	HANDLE h = get_handle(fd);
+	DWORD written = 0;
+
+	if(!WriteFile(h, buf, (DWORD)count, &written, NULL))
+		return -1;
+
+	return (ssize_t)written;
+}
+
+#endif
 
 void skip_spaces(char **p){
 	while(**p == ' ' || **p == '\n' || **p == '\t')
