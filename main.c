@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifdef __linux__
 #include <stdarg.h>
 
@@ -15,6 +16,13 @@ typedef unsigned long size_t;
 
 #ifdef __linux__
 
+=======
+#include <stdarg.h>
+#include <stddef.h>
+
+#ifdef __linux__
+#include <sys/types.h>
+>>>>>>> 36dc2fd (Update program)
 #define SYS_READ 0
 #define SYS_WRITE 1
 
@@ -44,12 +52,22 @@ ssize_t sys_write(int fd,const void *buf, size_t count){
 #endif
 
 #ifdef _WIN32
+<<<<<<< HEAD
+=======
+#include <windows.h>
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+>>>>>>> 36dc2fd (Update program)
 
 static HANDLE get_handle(int fd){
 	if (fd == 0) return GetStdHandle(STD_INPUT_HANDLE);
 	if (fd == 1) return GetStdHandle(STD_OUTPUT_HANDLE);
 	if (fd == 2) return GetStdHandle(STD_ERROR_HANDLE);
 	return INVALID_HANDLE_VALUE;
+<<<<<<< HEAD
+=======
+}
+>>>>>>> 36dc2fd (Update program)
 
 ssize_t sys_read(int fd, void *buf, size_t count){
 	HANDLE h = get_handle(fd);
